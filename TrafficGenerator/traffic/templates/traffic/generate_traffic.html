@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Traffic</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+        }
+        .container {
+            display: flex;
+            width: 70%;
+            height: 60%;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .left {
+            flex: 1;
+            background: url('https://via.placeholder.com/600x400') no-repeat center center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+            flex-direction: column;
+            text-align: center;
+        }
+        .left h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .left p {
+            font-size: 1.2em;
+        }
+        .right {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .form-container {
+            width: 80%;
+        }
+        .form-container form {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-container form input,
+        .form-container form button {
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .form-container form button {
+            background: #2575fc;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .form-container form button:hover {
+            background: #1a5bbc;
+        }
+        .form-errors {
+            color: red;
+            margin-top: 20px;
+        }
+
+        /* Countdown animation */
+        @keyframes countdown {
+            from {
+                width: 100%;
+            }
+            to {
+                width: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left">
+            <h1>Welcome to Website</h1>
+            <p>Generate traffic and boost your website views instantly.</p>
+        </div>
+        <div class="right">
+            <div class="form-container">
+                <form id="trafficForm" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" id="generateButton">Generate Views</button>
+                </form>
+                {% if form.errors %}
+                    <div class="form-errors">
+                        <strong>Errors:</strong>
+                        <ul>
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ field.name }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('trafficForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            
+            let views = document.querySelector('input[name="views"]').value; // Adjust the name attribute to match your form field
+            let button = document.getElementById('generateButton');
+            
+            if (!views || isNaN(views) || views <= 0) {
+                alert("Please enter a valid number of views");
+                return;
+            }
+            
+            let countdownTime = views; // Assume 1 view = 1 second for the countdown
+            
+            button.style.animation = `countdown ${countdownTime}s linear`;
+            button.disabled = true;
+            
+            let countdownInterval = setInterval(() => {
+                countdownTime--;
+                button.textContent = `Generating... (${countdownTime}s)`;
+                
+                if (countdownTime <= 0) {
+                    clearInterval(countdownInterval);
+                    button.textContent = "Generate Views";
+                    button.disabled = false;
+                    button.style.animation = '';
+                    document.getElementById('trafficForm').submit(); // Submit the form after countdown
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
